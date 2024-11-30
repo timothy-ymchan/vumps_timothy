@@ -71,7 +71,9 @@ end
 function _left_orthonormal_form(A::AbstractTensorMap,L0::AbstractTensorMap,η::Real=1e-10,maxiter::Integer=1000)
     L = normalize(L0)
     Lold = L
-    AL,L = leftorth(ncon([L,A],[[-1,1],[1,-2,-3]]))
+
+    AL,L = leftorth(ncon([L,A],[[-1,1],[1,-2,-3]]),(1,2,),(3,))
+
     λ = norm(L)
     normalize!(L)
 
@@ -85,13 +87,15 @@ function _left_orthonormal_form(A::AbstractTensorMap,L0::AbstractTensorMap,η::R
         # 
         
         Lold = L # Do QR Decomposition
-        AL,L = leftorth(ncon([L,A],[[-1,1],[1,-2,-3]]))
+        AL,L = leftorth(ncon([L,A],[[-1,1],[1,-2,-3]]),(1,2,),(3,))
         λ = norm(L)
         normalize!(L)
         δ = norm(L-Lold)
 
         iter += 1
     end
+    
+    AL = permute(AL,(1,2,3),())
     return AL,L,λ
 end
 
