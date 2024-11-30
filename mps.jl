@@ -81,7 +81,7 @@ function _left_orthonormal_form(A::AbstractTensorMap,L0::AbstractTensorMap,η::R
 
     iter = 1
     while δ > η && iter <= maxiter
-        # Implement arnoldi method later, previously it made it worse
+        # TODO:  arnoldi method later, previously it made it worse
         # 
         # 
         # 
@@ -116,7 +116,7 @@ function _mixed_canonical_form(A::AbstractTensorMap,L0::AbstractTensorMap,C0::Ab
     # ->-(AL)->-(C1)->- becomes ->-(AL)->-(V)->-(Σ)->-(U)->- 
     # and the gauge transformation is
     # ->-(AL)->- => ->-(V†)->-(AL)->-(V)->-
-    
+
     @tensor ALnew[i,j,k] := conj(V[i,m])*AL[m,j,n]*V[k,n]
     @tensor ARnew[i,j,k] := U[m,i]*AR[m,j,n]*conj(U[n,k])
 
@@ -124,8 +124,17 @@ function _mixed_canonical_form(A::AbstractTensorMap,L0::AbstractTensorMap,C0::Ab
     
 end
 
-function _check_mixed_canonical(A0::AbstractTensorMap,AL0::AbstractTensorMap,AR0::AbstractTensorMap,C::AbstractTensorMap,η::Real=1e-10;verbose=false)
-    return 
+function _check_mixed_canonical(AL0::AbstractTensorMap,AR0::AbstractTensorMap,C::AbstractTensorMap,η::Real=1e-10;verbose=false)
+    # Check that ->-(AL)->-(C)->- = ->-(C)->-(AR)->- up to tolerance η
+    ALC = ncon([AL0,C0],[[-1,-2,1],[-3,1]]) 
+    CAR = ncon([C,AR0],[[1,-1],[1,-2,-3]])
+    ϵ = norm(ALC-CAR)
+    
+    if ϵ > η
+        print("Warning: ->-(AL)->-(C)->- != ->-(C)->-(AR)->- up to tolerance $η")
+    elseif verbose
+        print("AL,AR,C satisfy the mixed canonical condition up to toloerance $η (Current value: $ϵ)")
+    end
 end
 
 function _check_left_canonical(A0::AbstractTensorMap,AL0::AbstractTensorMap,L0::AbstractTensorMap,η::Real=1e-10;verbose=false)
