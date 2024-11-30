@@ -104,9 +104,33 @@ function _right_orthonormal_form(A::AbstractTensorMap,R0::AbstractTensorMap,η::
 
     return permute(AR,(3,2,1),()), R, λ
 end
-function _check_left_canonical(A::AbstractTensorMap,AL::AbstractTensorMap,L::AbstractTensorMap,η::Real=1e-10;verbose=false)
-    LA  = ncon([L,A],[[-1,1],[1,-2,-3]])
-    ALL = ncon([AL,L],[[-1,-2,1],[1,-3]])
+
+function _mixed_canonical_form(A::AbstractTensorMap,L0::AbstractTensorMap,C0::AbstractTensorMap,η::Real)
+    AL,_, λ = _left_orthonormal_form(A,L0,η)
+    AR,C1,_  = _right_orthonormal_form(AL,C0,η) # ->-AL->-C1->- = ->-C1->-AR->- is automatically enforced
+    U,C,V = tsvd(C1) # Diagonalize C so that it's entries give entanglement spectrum directly
+
+    # Performing gauge transformation. Code conventions:
+    # ->- (C1) ->- = ->- (V) ->- (Σ) ->- (U) ->- 
+    # Therefore 
+    # ->-(AL)->-(C1)->- becomes ->-(AL)->-(V)->-(Σ)->-(U)->- 
+    # and the gauge transformation is
+    # ->-(AL)->- => ->-(V†)->-(AL)->-(V)->-
+    
+    @tensor ALnew[i,j,k] := conj(V[i,m])*AL[m,j,n]*V[k,n]
+    @tensor ARnew[i,j,k] := U[m,i]*AR[m,j,n]*conj(U[n,k])
+
+    return ALnew, ARnew, C, λ
+    
+end
+
+function _check_mixed_canonical(A0::AbstractTensorMap,AL0::AbstractTensorMap,AR0::AbstractTensorMap,C::AbstractTensorMap,η::Real=1e-10;verbose=false)
+    return 
+end
+
+function _check_left_canonical(A0::AbstractTensorMap,AL0::AbstractTensorMap,L0::AbstractTensorMap,η::Real=1e-10;verbose=false)
+    LA  = ncon([L0,A0],[[-1,1],[1,-2,-3]])
+    ALL = ncon([AL0,L0],[[-1,-2,1],[1,-3]])
     δ = norm(LA-ALL)
     if δ > η
         print("Warning: norm(LA-ALL)=$δ is greater than $η") 
@@ -115,10 +139,10 @@ function _check_left_canonical(A::AbstractTensorMap,AL::AbstractTensorMap,L::Abs
     end
 end
 
-function _check_right_canonical(A::AbstractTensorMap,AR::AbstracTensorMap,R::AbstracTensorMap,η::Real=1e-10; verbose=false)
+function _check_right_canonical(A0::AbstractTensorMap,AR0::AbstractTensorMap,R0::AbstractTensorMap,η::Real=1e-10; verbose=false)
     
-    AR = ncon([A,R],[[-1,-2,1],[-3,1]]) # This might look a bit strange input for a matrix is always the right most index
-    RAR = ncon([R,AR],[[1,-1],[1,-2,-3]])
+    AR = ncon([A0,R0],[[-1,-2,1],[-3,1]]) # This might look a bit strange input for a matrix is always the right most index
+    RAR = ncon([R0,AR0],[[1,-1],[1,-2,-3]])
     δ = norm(AR-RAR)
     if δ > η
         print("Warning: norm(LA-ALL)=$δ is greater than $η") 
