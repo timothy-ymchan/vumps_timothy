@@ -100,6 +100,8 @@ function _left_orthonormal_form(A::AbstractTensorMap,L0::AbstractTensorMap,η::R
 end
 
 function _right_orthonormal_form(A::AbstractTensorMap,R0::AbstractTensorMap,η::Real=1e-10,maxiter::Integer=1000)
-    AR,R,λ = _left_orthonormal_form(permute(A,(3,2,1),()),permute(R0,(2,),(1,)),η,maxiter)
-    return permute(AR,(3,2,1),()), permute(R,(2,),(1,)),λ
+    AR,R,λ = _left_orthonormal_form(permute(A,(3,2,1),()),R0,η,maxiter)
+
+    return permute(AR,(3,2,1),()), R, λ
+end
 end
