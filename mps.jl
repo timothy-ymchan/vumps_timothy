@@ -54,7 +54,7 @@ function transfer_mat(A::AbstractTensorMap,B::AbstractTensorMap,direction::Symbo
     - `T::AbstractTensorMap`: Transfer matrix computed from `A[i,m,j]*conj(B[k,m,l])`
     
     """
-    @tensor T[i,j,k,l] := A[i,m,j]*conj(B[k,m,l])
+    @tensor T[i,j,k,l] := A[i,m,k]*conj(B[j,m,l])
 
     if direction == :left 
         return permute(T,(3,4,),(1,2,))
