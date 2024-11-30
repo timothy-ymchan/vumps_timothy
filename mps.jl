@@ -65,13 +65,37 @@ function transfer_mat(A::AbstractTensorMap,B::AbstractTensorMap,direction::Symbo
     end
 
 end
+
+
 # Algorithm taken from https://arxiv.org/abs/1810.07006
-function _left_orthonormal_form(A::AbstractTensorMap,L0::AbstractTensorMap,η::Real)
+function _left_orthonormal_form(A::AbstractTensorMap,L0::AbstractTensorMap,η::Real=1e-10,maxiter::Integer=1000)
     L = normalize(L0)
     Lold = L
-    #AL,L = leftorth(ncon([L,A],)
+    AL,L = leftorth(ncon([L,A],[[-1,1],[1,-2,-3]]))
+    λ = norm(L)
+    normalize!(L)
+
+    δ = norm(L-Lold)
+
+    iter = 1
+    while δ > η && iter <= maxiter
+        # Implement arnoldi method later, previously it made it worse
+        # 
+        # 
+        # 
+        
+        Lold = L # Do QR Decomposition
+        AL,L = leftorth(ncon([L,A],[[-1,1],[1,-2,-3]]))
+        λ = norm(L)
+        normalize!(L)
+        δ = norm(L-Lold)
+
+        iter += 1
+    end
+    return AL,L,λ
 end
 
-function _right_orthonormal_form(A::AbstractTensorMap,ϵ::Real)
-    #
+function _right_orthonormal_form(A::AbstractTensorMap,R0::AbstractTensorMap,η::Real=1e-10,maxiter::Integer=1000)
+    AR,R,λ = _left_orthonormal_form(permute(A,(3,2,1),()),permute(R0,(2,),(1,)),η,maxiter)
+    return permute(AR,(3,2,1),()), permute(R,(2,),(1,)),λ
 end
