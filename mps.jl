@@ -104,4 +104,25 @@ function _right_orthonormal_form(A::AbstractTensorMap,R0::AbstractTensorMap,η::
 
     return permute(AR,(3,2,1),()), R, λ
 end
+function _check_left_canonical(A::AbstractTensorMap,AL::AbstractTensorMap,L::AbstractTensorMap,η::Real=1e-10;verbose=false)
+    LA  = ncon([L,A],[[-1,1],[1,-2,-3]])
+    ALL = ncon([AL,L],[[-1,-2,1],[1,-3]])
+    δ = norm(LA-ALL)
+    if δ > η
+        print("Warning: norm(LA-ALL)=$δ is greater than $η") 
+    elseif verbose
+        print("AL is left canonical within precision $η (Current value: $ϵ)")
+    end
+end
+
+function _check_right_canonical(A::AbstractTensorMap,AR::AbstracTensorMap,R::AbstracTensorMap,η::Real=1e-10; verbose=false)
+    
+    AR = ncon([A,R],[[-1,-2,1],[-3,1]]) # This might look a bit strange input for a matrix is always the right most index
+    RAR = ncon([R,AR],[[1,-1],[1,-2,-3]])
+    δ = norm(AR-RAR)
+    if δ > η
+        print("Warning: norm(LA-ALL)=$δ is greater than $η") 
+    elseif verbose
+        print("AL is right canonical within precision $η (Current value: $ϵ)")
+    end
 end
