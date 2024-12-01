@@ -68,6 +68,7 @@ end
 
 
 # Algorithm taken from https://arxiv.org/abs/1810.07006
+
 function _left_orthonormal_form(A::AbstractTensorMap,L0::AbstractTensorMap,η::Real=1e-10,maxiter::Integer=1000)
     L = normalize(L0)
     Lold = L
@@ -124,16 +125,16 @@ function _mixed_canonical_form(A::AbstractTensorMap,L0::AbstractTensorMap,C0::Ab
     
 end
 
-function _check_mixed_canonical(AL0::AbstractTensorMap,AR0::AbstractTensorMap,C::AbstractTensorMap,η::Real=1e-10;verbose=false)
+function _check_mixed_canonical(AL0::AbstractTensorMap,AR0::AbstractTensorMap,C0::AbstractTensorMap,η::Real=1e-10;verbose=false)
     # Check that ->-(AL)->-(C)->- = ->-(C)->-(AR)->- up to tolerance η
     ALC = ncon([AL0,C0],[[-1,-2,1],[-3,1]]) 
     CAR = ncon([C,AR0],[[1,-1],[1,-2,-3]])
     ϵ = norm(ALC-CAR)
     
     if ϵ > η
-        print("Warning: ->-(AL)->-(C)->- != ->-(C)->-(AR)->- up to tolerance $η")
+        print("Warning: ->-(AL)->-(C)->- != ->-(C)->-(AR)->- up to tolerance $η\n")
     elseif verbose
-        print("AL,AR,C satisfy the mixed canonical condition up to toloerance $η (Current value: $ϵ)")
+        print("AL,AR,C satisfy the mixed canonical condition up to toloerance $η (Current value: $ϵ)\n")
     end
 end
 
@@ -142,9 +143,9 @@ function _check_left_canonical(A0::AbstractTensorMap,AL0::AbstractTensorMap,L0::
     ALL = ncon([AL0,L0],[[-1,-2,1],[1,-3]])
     δ = norm(LA-ALL)
     if δ > η
-        print("Warning: norm(LA-ALL)=$δ is greater than $η") 
+        print("Warning: norm(LA-ALL)=$δ is greater than $η\n") 
     elseif verbose
-        print("AL is left canonical within precision $η (Current value: $ϵ)")
+        print("AL is left canonical within precision $η (Current value: $δ)\n")
     end
 end
 
@@ -154,8 +155,8 @@ function _check_right_canonical(A0::AbstractTensorMap,AR0::AbstractTensorMap,R0:
     RAR = ncon([R0,AR0],[[1,-1],[1,-2,-3]])
     δ = norm(AR-RAR)
     if δ > η
-        print("Warning: norm(LA-ALL)=$δ is greater than $η") 
+        print("Warning: norm(LA-ALL)=$δ is greater than $η\n") 
     elseif verbose
-        print("AL is right canonical within precision $η (Current value: $ϵ)")
+        print("AR is right canonical within precision $η (Current value: $δ)\n")
     end
 end
