@@ -9,3 +9,4 @@ Reference: Wikipedia; The arnoldi algorithm(https://acme.byu.edu/00000179-aa18-d
 $$A = \sum_{i} \lambda_i \ket{i}\bra{i}$$
 - where we have ordered our eigenvectors such that $|\lambda_i|\geq |\lambda_j|$ for all $i>j$
 - Then $A^n\ket{b}$ will be dominated by the eigenvector with the largest eigenvalue, and the Krylov subspace will very roughly be the subspace spanned by the first $n$ largest eigenvalues
+
